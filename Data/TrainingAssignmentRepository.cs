@@ -1,5 +1,6 @@
 using System.Data.SqlClient;
 using SCTMS.Models;
+using SCTMS.Utilities;
 
 namespace SCTMS.Data
 {
@@ -231,19 +232,19 @@ namespace SCTMS.Data
         {
             return new TrainingAssignment
             {
-                AssignmentID = reader.GetInt32("AssignmentID"),
-                UserID = reader.GetInt32("UserID"),
-                TrainingType = reader.GetString("TrainingType"),
+                AssignmentID = SafeConverter.GetInt(reader, "AssignmentID"),
+                UserID = SafeConverter.GetInt(reader, "UserID"),
+                TrainingType = SafeConverter.GetString(reader, "TrainingType"),
                 AssignedDate = reader.GetDateTime("AssignedDate"),
-                Status = reader.GetString("Status"),
-                CompletionDate = reader.IsDBNull("CompletionDate") ? null : reader.GetDateTime("CompletionDate"),
-                NextDueDate = reader.IsDBNull("NextDueDate") ? null : reader.GetDateTime("NextDueDate"),
-                CompletionCertificate = reader.IsDBNull("CompletionCertificate") ? string.Empty : reader.GetString("CompletionCertificate"),
-                Notes = reader.IsDBNull("Notes") ? string.Empty : reader.GetString("Notes"),
-                AssignedBy = reader.IsDBNull("AssignedBy") ? null : reader.GetInt32("AssignedBy"),
-                ReminderSentDate = reader.IsDBNull("ReminderSentDate") ? null : reader.GetDateTime("ReminderSentDate"),
-                ReminderCount = reader.GetInt32("ReminderCount"),
-                IsRefresher = reader.GetBoolean("IsRefresher")
+                Status = SafeConverter.GetString(reader, "Status"),
+                CompletionDate = SafeConverter.GetNullableDateTime(reader, "CompletionDate"),
+                NextDueDate = SafeConverter.GetNullableDateTime(reader, "NextDueDate"),
+                CompletionCertificate = SafeConverter.GetString(reader, "CompletionCertificate"),
+                Notes = SafeConverter.GetString(reader, "Notes"),
+                AssignedBy = SafeConverter.GetNullableInt(reader, "AssignedBy"),
+                ReminderSentDate = SafeConverter.GetNullableDateTime(reader, "ReminderSentDate"),
+                ReminderCount = SafeConverter.GetInt(reader, "ReminderCount"),
+                IsRefresher = SafeConverter.GetBool(reader, "IsRefresher")
             };
         }
     }

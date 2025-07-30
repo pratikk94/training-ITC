@@ -2,6 +2,7 @@ using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.Logging;
 using SCTMS.Data;
 using SCTMS.Models;
+using SCTMS.Utilities;
 
 namespace SCTMS.Services
 {
@@ -76,7 +77,7 @@ namespace SCTMS.Services
         {
             try
             {
-                var refresherYears = int.Parse(_configuration["AppSettings:RefresherCycleYears"] ?? "3");
+                var refresherYears = SafeConverter.ToInt(_configuration["AppSettings:RefresherCycleYears"], 3);
                 var success = await _trainingRepository.CompleteAssignmentAsync(assignmentId, certificate, completionDate, refresherYears);
                 
                 if (success)
@@ -98,7 +99,7 @@ namespace SCTMS.Services
         {
             try
             {
-                var reminderInterval = int.Parse(_configuration["AppSettings:ReminderIntervalDays"] ?? "10");
+                var reminderInterval = SafeConverter.ToInt(_configuration["AppSettings:ReminderIntervalDays"], 10);
                 var assignments = await _trainingRepository.GetDueForReminderAsync(reminderInterval);
                 
                 int remindersSent = 0;
@@ -131,7 +132,7 @@ namespace SCTMS.Services
         {
             try
             {
-                var refresherYears = int.Parse(_configuration["AppSettings:RefresherCycleYears"] ?? "3");
+                var refresherYears = SafeConverter.ToInt(_configuration["AppSettings:RefresherCycleYears"], 3);
                 var assignments = await _trainingRepository.GetDueForRefresherAsync(refresherYears);
                 
                 int refreshersCreated = 0;
@@ -165,7 +166,7 @@ namespace SCTMS.Services
         {
             try
             {
-                var nonComplianceDays = int.Parse(_configuration["AppSettings:NonComplianceDays"] ?? "60");
+                var nonComplianceDays = SafeConverter.ToInt(_configuration["AppSettings:NonComplianceDays"], 60);
                 var overdueAssignments = await _trainingRepository.GetOverdueAssignmentsAsync();
                 
                 var overdueIds = overdueAssignments

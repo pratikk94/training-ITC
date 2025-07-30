@@ -1,6 +1,7 @@
 using System.Data;
 using System.Data.SqlClient;
 using SCTMS.Models;
+using SCTMS.Utilities;
 
 namespace SCTMS.Data
 {
@@ -189,18 +190,18 @@ namespace SCTMS.Data
         {
             return new User
             {
-                UserID = reader.GetInt32("UserID"),
-                Name = reader.GetString("Name"),
-                EmployeeID = reader.GetString("EmployeeID"),
-                Level = reader.GetString("Level"),
-                Department = reader.GetString("Department"),
-                Status = reader.GetString("Status"),
-                ReportingManagerID = reader.IsDBNull("ReportingManagerID") ? null : reader.GetInt32("ReportingManagerID"),
-                Role = reader.GetString("Role"),
+                UserID = SafeConverter.GetInt(reader, "UserID"),
+                Name = SafeConverter.GetString(reader, "Name"),
+                EmployeeID = SafeConverter.GetString(reader, "EmployeeID"),
+                Level = SafeConverter.GetString(reader, "Level"),
+                Department = SafeConverter.GetString(reader, "Department"),
+                Status = SafeConverter.GetString(reader, "Status"),
+                ReportingManagerID = SafeConverter.GetNullableInt(reader, "ReportingManagerID"),
+                Role = SafeConverter.GetString(reader, "Role"),
                 CreatedDate = reader.GetDateTime("CreatedDate"),
-                LastLoginDate = reader.IsDBNull("LastLoginDate") ? null : reader.GetDateTime("LastLoginDate"),
-                Email = reader.GetString("Email"),
-                WindowsUsername = reader.GetString("WindowsUsername")
+                LastLoginDate = SafeConverter.GetNullableDateTime(reader, "LastLoginDate"),
+                Email = SafeConverter.GetString(reader, "Email"),
+                WindowsUsername = SafeConverter.GetString(reader, "WindowsUsername")
             };
         }
     }

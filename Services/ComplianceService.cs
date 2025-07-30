@@ -2,6 +2,7 @@ using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.Logging;
 using SCTMS.Data;
 using SCTMS.Models;
+using SCTMS.Utilities;
 using System.Data.SqlClient;
 
 namespace SCTMS.Services
@@ -49,7 +50,7 @@ namespace SCTMS.Services
 
         public async Task<List<TrainingAssignment>> GetOverdueAssignmentsAsync(int userId)
         {
-            var nonComplianceDays = int.Parse(_configuration["AppSettings:NonComplianceDays"] ?? "60");
+            var nonComplianceDays = SafeConverter.ToInt(_configuration["AppSettings:NonComplianceDays"], 60);
             
             const string sql = @"
                 SELECT AssignmentID, UserID, TrainingType, AssignedDate, Status, 
@@ -68,7 +69,7 @@ namespace SCTMS.Services
 
         public async Task<List<User>> GetNonCompliantUsersAsync()
         {
-            var nonComplianceDays = int.Parse(_configuration["AppSettings:NonComplianceDays"] ?? "60");
+            var nonComplianceDays = SafeConverter.ToInt(_configuration["AppSettings:NonComplianceDays"], 60);
             return await _userRepository.GetNonCompliantUsersAsync(nonComplianceDays);
         }
 
@@ -265,8 +266,8 @@ namespace SCTMS.Services
         {
             try
             {
-                var nonComplianceDays = int.Parse(_configuration["AppSettings:NonComplianceDays"] ?? "60");
-                var autoBlockEnabled = bool.Parse(_configuration["AppSettings:AutoBlockEnabled"] ?? "true");
+                var nonComplianceDays = SafeConverter.ToInt(_configuration["AppSettings:NonComplianceDays"], 60);
+                var autoBlockEnabled = SafeConverter.ToBool(_configuration["AppSettings:AutoBlockEnabled"], true);
 
                 if (!autoBlockEnabled)
                 {
@@ -356,19 +357,19 @@ namespace SCTMS.Services
         {
             return new LoginAccess
             {
-                LoginAccessID = reader.GetInt32("LoginAccessID"),
-                UserID = reader.GetInt32("UserID"),
-                IsBlocked = reader.GetBoolean("IsBlocked"),
-                BlockDate = reader.IsDBNull("BlockDate") ? null : reader.GetDateTime("BlockDate"),
-                BlockReason = reader.IsDBNull("BlockReason") ? string.Empty : reader.GetString("BlockReason"),
-                UnblockRequestedBy = reader.IsDBNull("UnblockRequestedBy") ? null : reader.GetInt32("UnblockRequestedBy"),
-                UnblockRequestDate = reader.IsDBNull("UnblockRequestDate") ? null : reader.GetDateTime("UnblockRequestDate"),
-                UnblockApproved = reader.GetBoolean("UnblockApproved"),
-                UnblockApprovedBy = reader.IsDBNull("UnblockApprovedBy") ? null : reader.GetInt32("UnblockApprovedBy"),
-                UnblockApprovedDate = reader.IsDBNull("UnblockApprovedDate") ? null : reader.GetDateTime("UnblockApprovedDate"),
-                UnblockNotes = reader.IsDBNull("UnblockNotes") ? string.Empty : reader.GetString("UnblockNotes"),
-                LastLoginAttempt = reader.IsDBNull("LastLoginAttempt") ? null : reader.GetDateTime("LastLoginAttempt"),
-                FailedLoginAttempts = reader.GetInt32("FailedLoginAttempts")
+                LoginAccessID = SafeConverter.GetInt(reader, "LoginAccessID"),
+                UserID = SafeConverter.GetInt(reader, "UserID"),
+                IsBlocked = SafeConverter.GetBool(reader, "IsBlocked"),
+                BlockDate = SafeConverter.GetNullableDateTime(reader, "BlockDate"),
+                BlockReason = SafeConverter.GetString(reader, "BlockReason"),
+                UnblockRequestedBy = SafeConverter.GetNullableInt(reader, "UnblockRequestedBy"),
+                UnblockRequestDate = SafeConverter.GetNullableDateTime(reader, "UnblockRequestDate"),
+                UnblockApproved = SafeConverter.GetBool(reader, "UnblockApproved"),
+                UnblockApprovedBy = SafeConverter.GetNullableInt(reader, "UnblockApprovedBy"),
+                UnblockApprovedDate = SafeConverter.GetNullableDateTime(reader, "UnblockApprovedDate"),
+                UnblockNotes = SafeConverter.GetString(reader, "UnblockNotes"),
+                LastLoginAttempt = SafeConverter.GetNullableDateTime(reader, "LastLoginAttempt"),
+                FailedLoginAttempts = SafeConverter.GetInt(reader, "FailedLoginAttempts")
             };
         }
 
@@ -376,19 +377,19 @@ namespace SCTMS.Services
         {
             return new TrainingAssignment
             {
-                AssignmentID = reader.GetInt32("AssignmentID"),
-                UserID = reader.GetInt32("UserID"),
-                TrainingType = reader.GetString("TrainingType"),
+                AssignmentID = SafeConverter.GetInt(reader, "AssignmentID"),
+                UserID = SafeConverter.GetInt(reader, "UserID"),
+                TrainingType = SafeConverter.GetString(reader, "TrainingType"),
                 AssignedDate = reader.GetDateTime("AssignedDate"),
-                Status = reader.GetString("Status"),
-                CompletionDate = reader.IsDBNull("CompletionDate") ? null : reader.GetDateTime("CompletionDate"),
-                NextDueDate = reader.IsDBNull("NextDueDate") ? null : reader.GetDateTime("NextDueDate"),
-                CompletionCertificate = reader.IsDBNull("CompletionCertificate") ? string.Empty : reader.GetString("CompletionCertificate"),
-                Notes = reader.IsDBNull("Notes") ? string.Empty : reader.GetString("Notes"),
-                AssignedBy = reader.IsDBNull("AssignedBy") ? null : reader.GetInt32("AssignedBy"),
-                ReminderSentDate = reader.IsDBNull("ReminderSentDate") ? null : reader.GetDateTime("ReminderSentDate"),
-                ReminderCount = reader.GetInt32("ReminderCount"),
-                IsRefresher = reader.GetBoolean("IsRefresher")
+                Status = SafeConverter.GetString(reader, "Status"),
+                CompletionDate = SafeConverter.GetNullableDateTime(reader, "CompletionDate"),
+                NextDueDate = SafeConverter.GetNullableDateTime(reader, "NextDueDate"),
+                CompletionCertificate = SafeConverter.GetString(reader, "CompletionCertificate"),
+                Notes = SafeConverter.GetString(reader, "Notes"),
+                AssignedBy = SafeConverter.GetNullableInt(reader, "AssignedBy"),
+                ReminderSentDate = SafeConverter.GetNullableDateTime(reader, "ReminderSentDate"),
+                ReminderCount = SafeConverter.GetInt(reader, "ReminderCount"),
+                IsRefresher = SafeConverter.GetBool(reader, "IsRefresher")
             };
         }
     }
